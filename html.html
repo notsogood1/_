@@ -42,14 +42,14 @@
     const ball = new THREE.Mesh(ballGeometry, ballMaterial);
     scene.add(ball);
 
-    // Set initial ball position
-    ball.position.set(0, ballRadius, -10);
+    // Set initial ball position at the bottom of the hill
+    ball.position.set(0, ballRadius, 10); // Start at the bottom
 
     // Create the ground (inclined plane)
     const groundGeometry = new THREE.PlaneGeometry(20, 100);
     const groundMaterial = new THREE.MeshStandardMaterial({ color: 0x00aa00 });
     const ground = new THREE.Mesh(groundGeometry, groundMaterial);
-    ground.rotation.x = -Math.PI / 2;
+    ground.rotation.x = -Math.PI / 4; // Tilt the ground for an incline
     scene.add(ground);
 
     // Variables for game logic
@@ -90,8 +90,9 @@
     function animate() {
       requestAnimationFrame(animate);
 
-      // Move the ball up the hill
-      ball.position.z += ballSpeedZ;
+      // Move the ball up the hill by adjusting the z position based on the incline
+      ball.position.z -= ballSpeedZ * Math.cos(Math.PI / 4); // Move up the slope
+      ball.position.y += ballSpeedZ * Math.sin(Math.PI / 4); // Adjust height based on incline
 
       // Move obstacles and check for collisions
       obstacles.forEach((obstacle, index) => {
