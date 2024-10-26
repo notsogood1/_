@@ -62,9 +62,9 @@
     // Display score
     const scoreDisplay = document.getElementById('score');
 
-    // Set up camera position
-    camera.position.set(0, 5, 5); // Position camera to look down at the incline
-    camera.lookAt(0, 0, 0); // Look at the origin
+    // Set initial camera position
+    camera.position.set(0, 5, 5); // Initial position of the camera
+    camera.lookAt(ball.position); // Make the camera look at the ball
 
     // Function to create obstacles
     function spawnObstacle() {
@@ -92,6 +92,10 @@
       // Move the ball up the hill by adjusting the z position based on the incline
       ball.position.z -= ballSpeed * Math.cos(Math.PI / 4); // Move up the slope
       ball.position.y += ballSpeed * Math.sin(Math.PI / 4); // Adjust height based on incline
+
+      // Update camera position to follow the ball
+      camera.position.set(ball.position.x, ball.position.y + 3, ball.position.z + 5); // Offset above and behind the ball
+      camera.lookAt(ball.position); // Always look at the ball
 
       // Move obstacles and check for collisions
       obstacles.forEach((obstacle, index) => {
