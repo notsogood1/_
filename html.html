@@ -43,7 +43,7 @@
     scene.add(ball);
 
     // Set initial ball position at the bottom of the hill
-    ball.position.set(0, ballRadius, 10); // Start at the bottom
+    ball.position.set(0, ballRadius, 0); // Start at the bottom
 
     // Create the ground (inclined plane)
     const groundGeometry = new THREE.PlaneGeometry(20, 100);
@@ -55,7 +55,7 @@
     // Variables for game logic
     let score = 0;
     let obstacles = [];
-    let ballSpeedZ = 0.1; // Ball speed going up the hill
+    let ballSpeed = 0.05; // Ball speed going up the hill
     let obstacleSpeed = 0.05;
     let obstacleSpawnInterval = 2000;
 
@@ -63,9 +63,8 @@
     const scoreDisplay = document.getElementById('score');
 
     // Set up camera position
-    camera.position.z = 5;
-    camera.position.y = 2;
-    camera.rotation.x = -0.3;
+    camera.position.set(0, 5, 5); // Position camera to look down at the incline
+    camera.lookAt(0, 0, 0); // Look at the origin
 
     // Function to create obstacles
     function spawnObstacle() {
@@ -74,7 +73,7 @@
       const obstacle = new THREE.Mesh(obstacleGeometry, obstacleMaterial);
 
       obstacle.position.x = (Math.random() - 0.5) * 10; // Random x position
-      obstacle.position.y = 0.5;
+      obstacle.position.y = 0.5; // Set the height of the obstacle
       obstacle.position.z = ball.position.z - 20; // Start far in front of the ball
       scene.add(obstacle);
       obstacles.push(obstacle);
@@ -91,8 +90,8 @@
       requestAnimationFrame(animate);
 
       // Move the ball up the hill by adjusting the z position based on the incline
-      ball.position.z -= ballSpeedZ * Math.cos(Math.PI / 4); // Move up the slope
-      ball.position.y += ballSpeedZ * Math.sin(Math.PI / 4); // Adjust height based on incline
+      ball.position.z -= ballSpeed * Math.cos(Math.PI / 4); // Move up the slope
+      ball.position.y += ballSpeed * Math.sin(Math.PI / 4); // Adjust height based on incline
 
       // Move obstacles and check for collisions
       obstacles.forEach((obstacle, index) => {
