@@ -1,96 +1,144 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Combined Website</title>
-    <style>
-        /* CSS styles go here */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 20px;
-        }
-        h1 {
-            color: #333;
-        }
-        p {
-            font-size: 16px;
-            color: #666;
-        }
-        button {
-            padding: 10px 15px;
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rolling Ball Downhill</title>
+  <style>
+    /* Style the game area */
+    #gameArea {
+      width: 100vw;
+      height: 100vh;
+      background: linear-gradient(to bottom, #87CEEB, #008000);
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Style the ball */
+    #ball {
+      width: 50px;
+      height: 50px;
+      background-color: #FF5733;
+      border-radius: 50%;
+      position: absolute;
+      top: 0; /* Start from the top */
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    /* Style the obstacles */
+    .obstacle {
+      width: 50px;
+      height: 50px;
+      background-color: #333;
+      position: absolute;
+      border-radius: 10px;
+      top: -50px;
+    }
+
+    /* Style the score display */
+    #score {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 20px;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+  </style>
 </head>
 <body>
-    <h1>Welcome to My Combined Website!</h1>
-    <p>This is a simple example of combining HTML, CSS, and JavaScript into one file.</p>
+  <div id="gameArea">
+    <div id="ball"></div>
+    <div id="score">Score: 0</div>
+  </div>
 
-    <button id="myButton">Click Me!</button>
+  <script>
+    // Select game elements
+    const gameArea = document.getElementById('gameArea');
+    const ball = document.getElementById('ball');
+    const scoreDisplay = document.getElementById('score');
 
-    <script>
-       const button = document.getElementById("dont-touch-button");
-const hackingEffect = document.getElementById("hacking-effect");
+    // Ball properties
+    let ballPositionX = window.innerWidth / 2;
+    let ballSpeedX = 10;
+    let ballFallSpeed = 2;
 
-// Function to keep the button away from the mouse cursor
-document.addEventListener("mousemove", function(event) {
-    // Get the button's position
-    const rect = button.getBoundingClientRect();
-    const buttonWidth = rect.width;
-    const buttonHeight = rect.height;
+    // Obstacle properties
+    let obstacles = [];
+    let obstacleSpeed = 2;
+    let obstacleInterval = 1500; // Spawn obstacle every 1.5 seconds
+    let score = 0;
 
-    const mouseX = event.clientX;
-    const mouseY = event.clientY;
+    // Set initial ball position
+    ball.style.left = ballPositionX + 'px';
 
-    const buttonCenterX = rect.left + buttonWidth / 2;
-    const buttonCenterY = rect.top + buttonHeight / 2;
-
-    if (Math.abs(mouseX - buttonCenterX) < 50 && Math.abs(mouseY - buttonCenterY) < 50) {
-        let offsetX = Math.random() * 100 - 50; 
-        let offsetY = Math.random() * 100 - 50; 
-
-        let newLeft = buttonCenterX + offsetX - buttonWidth / 2;
-        let newTop = buttonCenterY + offsetY - buttonHeight / 2;
-
-        if (newLeft < 0) newLeft = 0;
-        else if (newLeft + buttonWidth > window.innerWidth) newLeft = window.innerWidth - buttonWidth;
-
-        if (newTop < 0) newTop = 0;
-        else if (newTop + buttonHeight > window.innerHeight) newTop = window.innerHeight - buttonHeight;
-
-        button.style.position = 'absolute';
-        button.style.left = newLeft + 'px';
-        button.style.top = newTop + 'px';
+    // Function to move the ball left or right
+    function moveBall(direction) {
+      ballPositionX += direction * ballSpeedX;
+      ballPositionX = Math.max(0, Math.min(window.innerWidth - 50, ballPositionX)); // Keep within bounds
+      ball.style.left = ballPositionX + 'px';
     }
-});
 
-// Add click event to trigger hacking effect
-button.addEventListener("click", function() {
-    hackingEffect.classList.add("show");
-    // You can add additional hacking animation or text here
-        document.getElementById('myButton').addEventListener('click', function() {
-            alert('Button was clicked!');
-        });
+    // Event listener for arrow keys
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') moveBall(-1);
+      if (e.key === 'ArrowRight') moveBall(1);
+    });
 
-        // Additional JavaScript code
-        console.log('JavaScript is working!');
-        var name = 'John Doe';
-        console.log('Hello, ' + name + '!');
+    // Spawn new obstacles at random x positions
+    function spawnObstacle() {
+      const obstacle = document.createElement('div');
+      obstacle.classList.add('obstacle');
+      obstacle.style.left = Math.random() * (window.innerWidth - 50) + 'px';
+      gameArea.appendChild(obstacle);
+      obstacles.push(obstacle);
+    }
 
-        // Create a new paragraph element
-        var para = document.createElement('p');
-        para.textContent = 'This paragraph was created using JavaScript!';
-        document.body.appendChild(para);
-    </script>
+    // Update game elements (ball, obstacles, and score)
+    function updateGame() {
+      // Move the ball downward
+      const ballTop = parseInt(ball.style.top || 0) + ballFallSpeed;
+      ball.style.top = ballTop + 'px';
+
+      // Check for collision and move obstacles
+      obstacles.forEach((obstacle, index) => {
+        const currentTop = parseInt(obstacle.style.top || 0);
+        obstacle.style.top = currentTop + obstacleSpeed + 'px';
+
+        // Check for collision with the ball
+        const obstacleRect = obstacle.getBoundingClientRect();
+        const ballRect = ball.getBoundingClientRect();
+        if (
+          obstacleRect.bottom > ballRect.top &&
+          obstacleRect.top < ballRect.bottom &&
+          obstacleRect.right > ballRect.left &&
+          obstacleRect.left < ballRect.right
+        ) {
+          alert('Game Over! Final Score: ' + score);
+          window.location.reload(); // Restart the game
+        }
+
+        // Remove obstacles that go off screen
+        if (currentTop > window.innerHeight) {
+          obstacle.remove();
+          obstacles.splice(index, 1);
+          score++; // Increase score for each avoided obstacle
+        }
+      });
+
+      // Increase difficulty over time
+      ballFallSpeed += 0.001;
+      obstacleSpeed += 0.001;
+      if (obstacleInterval > 500) obstacleInterval -= 1;
+
+      // Update score display
+      scoreDisplay.textContent = 'Score: ' + score;
+    }
+
+    // Game loop to keep the game running
+    setInterval(updateGame, 20); // 50 frames per second
+    setInterval(spawnObstacle, obstacleInterval); // Spawn obstacles at intervals
+  </script>
 </body>
 </html>
