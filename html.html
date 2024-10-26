@@ -61,6 +61,7 @@
 
     // Ball properties
     let ballPositionX = window.innerWidth / 2;
+    let ballPositionY = 0; // Initial Y position
     let ballSpeedX = 10;
     let ballFallSpeed = 2;
 
@@ -72,6 +73,7 @@
 
     // Set initial ball position
     ball.style.left = ballPositionX + 'px';
+    ball.style.top = ballPositionY + 'px';
 
     // Function to move the ball left or right
     function moveBall(direction) {
@@ -98,8 +100,8 @@
     // Update game elements (ball, obstacles, and score)
     function updateGame() {
       // Move the ball downward
-      const ballTop = parseInt(ball.style.top || 0) + ballFallSpeed;
-      ball.style.top = ballTop + 'px';
+      ballPositionY += ballFallSpeed;
+      ball.style.top = ballPositionY + 'px';
 
       // Check for collision and move obstacles
       obstacles.forEach((obstacle, index) => {
