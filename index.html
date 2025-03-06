@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Paper Trading</title>
+</head>
+<body>
+    <input type="text" id="symbol" placeholder="Stock Symbol">
+    <button onclick="getStockData()">Get Data</button>
+    <div id="stockData"></div>
+    <button onclick="executeTrade()">Buy 1 Share</button>
+
+    <script>
+        function getStockData() {
+            const symbol = document.getElementById('symbol').value;
+            fetch(`/stock/${symbol}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('stockData').innerText = JSON.stringify(data);
+                });
+        }
+        function executeTrade() {
+          const symbol = document.getElementById('symbol').value;
+          fetch('/trade', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({symbol: symbol, quantity:1, type:'buy'}),
+          }).then(response => response.json())
+          .then(data => console.log(data));
+        }
+    </script>
+</body>
+</html>
